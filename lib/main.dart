@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+// import 'firebase_options.dart';
 import 'package:provider/provider.dart';
-// import 'package:firebase_core/firebase_core.dart';
+
+import 'view/login_page.dart';
 import 'view/lista_cliente.dart';
 import 'view/config_page.dart';
 import 'viewmodel/cliente_viewmodel.dart';
@@ -35,9 +36,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Cadastro de Clientes e Cidades',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const HomeMenuPage(),
+      title: 'Cadastro de Cidades',
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.userChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasData) {
+            return const HomePage();
+          }
+          return const LoginPage();
+        },
+      ),
     );
   }
 }
