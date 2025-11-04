@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+
 import '../viewmodel/cliente_viewmodel.dart';
-import 'cadastro_cliente_page.dart';
 import '../model/cliente.dart';
+import '../services/auth_service.dart';
+import 'cadastro_cliente_page.dart';
+import 'login_page.dart'; // ← para redirecionar após logout
 
 class ListaClientesPage extends StatefulWidget {
   const ListaClientesPage({super.key});
@@ -15,6 +19,7 @@ class _ListaClientesPageState extends State<ListaClientesPage> {
   List<Cliente> clientesLocal = [];
   List<Cliente> clientesFirebase = [];
   bool carregando = true;
+  final authService = AuthService(); // ← instância do serviço de autenticação
 
   @override
   void initState() {
@@ -35,10 +40,30 @@ class _ListaClientesPageState extends State<ListaClientesPage> {
     await _carregarClientes();
   }
 
+  Future<void> _logout() async {
+    await authService.signOut(); // faz logout do Firebase (Google/email)
+    if (mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+        (route) => false,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Clientes')),
+      appBar: AppBar(
+        title: const Text('Clientes'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sair',
+            onPressed: _logout,
+          ),
+        ],
+      ),
       body: carregando
           ? const Center(child: CircularProgressIndicator())
           : ListView(
