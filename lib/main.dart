@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'viewmodel/midia_viewmodel.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,7 @@ import 'view/config_page.dart';
 import 'viewmodel/cliente_viewmodel.dart';
 import 'viewmodel/cidade_viewmodel.dart';
 import 'repository/cidade_repository.dart';
+import 'app_widget.dart';
 import 'db/db_helper.dart';
 
 Future<void> main() async {
@@ -20,14 +22,15 @@ Future<void> main() async {
 
   runApp(
     MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ClienteViewModel()),
-        ChangeNotifierProvider(
-          create: (_) => CidadeViewModel(CidadeRepository())..carregar(),
-        ),
-      ],
-      child: const MyApp(),
-    ),
+    providers: [
+      ChangeNotifierProvider(create: (_) => ClienteViewModel()),
+      ChangeNotifierProvider(
+        create: (_) => CidadeViewModel(CidadeRepository())..carregar(),
+      ),
+      ChangeNotifierProvider(create: (_) => MidiaViewModel()), // 👈 NOVO
+    ],
+    child: const MyApp(),
+  ),
   );
 }
 
