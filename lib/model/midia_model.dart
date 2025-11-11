@@ -1,37 +1,42 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-class MidiaModel {
+
+class Midia {
   final String id;
   final String url;
-  final String label;
-  final String tipo;
-  final DateTime? data;
+  final String nomeArquivo;
+  final String rotulo;
+  final String? base64Amostra;
+  final DateTime dataUpload;
 
-  MidiaModel({
+  Midia({
     required this.id,
     required this.url,
-    required this.label,
-    required this.tipo,
-    this.data,
+    required this.nomeArquivo,
+    required this.rotulo,
+    this.base64Amostra,
+    required this.dataUpload,
   });
 
-  // Construtor para converter do Firestore
-  factory MidiaModel.fromMap(String id, Map<String, dynamic> map) {
-    return MidiaModel(
-      id: id,
-      url: map['url'] ?? '',
-      label: map['label'] ?? '',
-      tipo: map['tipo'] ?? '',
-      data: (map['data'] as Timestamp?)?.toDate(),
-    );
-  }
-
-  // 👇 Adicione este método para enviar ao Firestore
   Map<String, dynamic> toMap() {
     return {
       'url': url,
-      'label': label,
-      'tipo': tipo,
-      'data': data ?? DateTime.now(),
+      'nome_arquivo': nomeArquivo,
+      'rotulo': rotulo,
+      'base64_amostra': base64Amostra,
+      'data_upload': Timestamp.fromDate(dataUpload),
     };
+  }
+
+  factory Midia.fromMap(String id, Map<String, dynamic> map) {
+    return Midia(
+      id: id,
+      url: map['url'] ?? '',
+      nomeArquivo: map['nome_arquivo'] ?? '',
+      rotulo: map['rotulo'] ?? '',
+      base64Amostra: map['base64_amostra'],
+      dataUpload: (map['data_upload'] is Timestamp)
+          ? (map['data_upload'] as Timestamp).toDate()
+          : DateTime.now(),
+    );
   }
 }

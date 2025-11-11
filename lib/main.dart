@@ -8,29 +8,30 @@ import 'package:provider/provider.dart';
 import 'view/login_page.dart';
 import 'view/lista_cliente.dart';
 import 'view/config_page.dart';
+import 'view/midia_page.dart';
 import 'viewmodel/cliente_viewmodel.dart';
 import 'viewmodel/cidade_viewmodel.dart';
 import 'repository/cidade_repository.dart';
-import 'app_widget.dart';
 import 'db/db_helper.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await DatabaseHelper.instance.database;
 
   runApp(
     MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_) => ClienteViewModel()),
-      ChangeNotifierProvider(
-        create: (_) => CidadeViewModel(CidadeRepository())..carregar(),
-      ),
-      ChangeNotifierProvider(create: (_) => MidiaViewModel()), // 👈 NOVO
-    ],
-    child: const MyApp(),
-  ),
+      providers: [
+        ChangeNotifierProvider(create: (_) => ClienteViewModel()),
+        ChangeNotifierProvider(
+          create: (_) => CidadeViewModel(CidadeRepository())..carregar(),
+        ),
+        ChangeNotifierProvider(create: (_) => MidiaViewModel()),
+      ],
+      child: const MyApp(),
+    ),
   );
 }
 
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasData) {
-            return const ListaClientesPage();
+            return const HomeMenuPage();
           }
           return const LoginPage();
         },
@@ -75,6 +76,17 @@ class HomeMenuPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const ListaClientesPage()),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.cloud_upload),
+              label: const Text('Captura de Mídia'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const MidiaPage()),
                 );
               },
             ),
