@@ -29,17 +29,48 @@ class _MidiaPageState extends State<MidiaPage> {
           }
           final midias = snapshot.data ?? [];
 
+          if (midias.isEmpty) {
+            return const Center(child: Text('Nenhuma mídia encontrada.'));
+          }
+
           return ListView.builder(
             itemCount: midias.length,
             itemBuilder: (context, index) {
               final midia = midias[index];
-              return ListTile(
-                leading: const Icon(Icons.image),
-                title: Text(midia.rotulo),
-                subtitle: Text(midia.nomeArquivo),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () => vm.deletarMidia(midia.id),
+              final isVideo = midia.nomeArquivo.toLowerCase().endsWith('.mp4');
+
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                elevation: 3,
+                child: ListTile(
+                  leading: isVideo
+                      ? const Icon(Icons.videocam, color: Colors.blueAccent)
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            midia.url,
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.broken_image, color: Colors.grey),
+                          ),
+                        ),
+                  title: Text(midia.rotulo),
+                  subtitle: Text(midia.nomeArquivo),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.redAccent),
+                    onPressed: () => vm.deletarMidia(midia.id),
+                  ),
+                  onTap: () {
+                    // Ao clicar, mostra a imagem ou vídeo em tela cheia
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => MidiaDetalhePage(midia: midia),
+                      ),
+                    );
+                  },
                 ),
               );
             },
@@ -82,6 +113,30 @@ class _MidiaPageState extends State<MidiaPage> {
             child: const Text('Vídeo'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class MidiaDetalhePage extends StatelessWidget {
+  final Midia midia;
+  const MidiaDetalhePage({super.key, required this.midia});
+
+  @override
+  Widget build(BuildContext context) {
+    final isVideo = midia.nomeArquivo.toLowerCase().endsWith('.mp4');
+
+    return Scaffold(
+      appBar: AppBar(title: Text(midia.rotulo)),
+      body: Center(
+        child: isVideo
+            ? const Icon(Icons.videocam, size: 100, color: Colors.blueAccent)
+            : Image.network(
+                midia.url,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.broken_image, size: 80, color: Colors.grey),
+              ),
       ),
     );
   }

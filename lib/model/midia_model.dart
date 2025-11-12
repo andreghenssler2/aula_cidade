@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Midia {
   final String id;
   final String url;
   final String nomeArquivo;
   final String rotulo;
-  final String? base64Amostra;
   final DateTime dataUpload;
 
   Midia({
@@ -13,7 +11,6 @@ class Midia {
     required this.url,
     required this.nomeArquivo,
     required this.rotulo,
-    this.base64Amostra,
     required this.dataUpload,
   });
 
@@ -22,8 +19,7 @@ class Midia {
       'url': url,
       'nome_arquivo': nomeArquivo,
       'rotulo': rotulo,
-      'base64_amostra': base64Amostra,
-      'data_upload': Timestamp.fromDate(dataUpload),
+      'data_upload': dataUpload,
     };
   }
 
@@ -33,10 +29,22 @@ class Midia {
       url: map['url'] ?? '',
       nomeArquivo: map['nome_arquivo'] ?? '',
       rotulo: map['rotulo'] ?? '',
-      base64Amostra: map['base64_amostra'],
       dataUpload: (map['data_upload'] is Timestamp)
           ? (map['data_upload'] as Timestamp).toDate()
           : DateTime.now(),
     );
   }
+
+/*factory Midia.fromMap(String id, Map<String, dynamic> map) {
+    return Midia(
+      id: id,
+      url: map['url'] ?? '',
+      nomeArquivo: map['nome_arquivo'] ?? '',
+      rotulo: map['rotulo'] ?? '',
+      dataUpload: (map['data_upload'] as Timestamp).toDate(),
+    );
+  } */
+
 }
+
+

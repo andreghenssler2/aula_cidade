@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,25 +22,20 @@ class MidiaViewModel extends ChangeNotifier {
 
     final file = File(arquivo.path);
 
-    // 1️⃣ Envia o arquivo para Azure Blob
+    // 1️⃣ Envia para o Azure Blob Storage
     final url = await _azureService.uploadFileToAzure(file);
     if (url == null) return;
 
-    // 2️⃣ Cria amostra Base64 (opcional)
-    final bytes = await file.readAsBytes();
-    final base64Amostra = base64Encode(bytes);
-
-    // 3️⃣ Cria objeto Midia
+    // 2️⃣ Cria objeto Midia com a URL
     final novaMidia = Midia(
       id: const Uuid().v4(),
       url: url,
       nomeArquivo: arquivo.name,
       rotulo: rotulo,
-      base64Amostra: base64Amostra,
       dataUpload: DateTime.now(),
     );
 
-    // 4️⃣ Salva no Firestore
+    // 3️⃣ Salva no Firestore (só metadados)
     await _repository.salvarMidia(novaMidia);
     notifyListeners();
   }
